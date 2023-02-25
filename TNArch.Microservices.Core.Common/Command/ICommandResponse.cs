@@ -2,13 +2,19 @@
 {
     public class CommandResponse
     {
-        public bool IsAuthorized { get; set; }
-        public bool IsValid { get; }
+        public bool IsAuthorized { get; set; } = true;
+        public bool IsValid { get; set; } = true;
         public ValidationError[] ValidationErrors { get; set; }
     }
 
-    public class CommandResponse<TResponse>: CommandResponse
+    public class CommandResponse<TResponse> : CommandResponse
     {
-        public TResponse Response { get; }
+        public TResponse Response { get; set; }
+    }
+
+    public class QueryResult<TResponse>
+    {
+        public bool IsAuthorized { get; set; } = true;
+        public TResponse Response { get; set; }
     }
 }

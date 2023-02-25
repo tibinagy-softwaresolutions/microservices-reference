@@ -9,20 +9,16 @@ using AzureFunctions.Extensions.Swashbuckle.Attribute;
 using AzureFunctions.Extensions.Swashbuckle;
 using System.Net.Http;
 using TNArch.Microservices.Infrastructure.Common.OpenApi;
-using TNArch.Microservices.Core.Common.Command;
-using System.Text.Json;
 
 namespace TNArch.Microservices.Inventory
 {
     public class InventoryFunctions
     {
-        private readonly ICommandToApiMapper _commandToApiMapper;
-        private readonly ICommandDispatcher _commandDispatcher;
+        private readonly ICommandDispatcherInvoker _invoker;
 
-        public InventoryFunctions(ICommandToApiMapper commandToApiMapper, ICommandDispatcher commandDispatcher)
+        public InventoryFunctions(ICommandDispatcherInvoker invoker)
         {
-            _commandToApiMapper = commandToApiMapper;
-            _commandDispatcher = commandDispatcher;
+            _invoker = invoker;
         }
 
         [FunctionName(nameof(OpenApi))]
@@ -35,11 +31,7 @@ namespace TNArch.Microservices.Inventory
         [FunctionName(nameof(RequestReceived))]
         public async Task<IActionResult> RequestReceived([HttpTrigger(AuthorizationLevel.Function, "get", "post", "put", "delete", Route = "{*commandName}")] HttpRequest req, string commandName, ILogger log)
         {
-            var handlerMap = _commandToApiMapper.GetHandlerMap(commandName, req.Method);
-
-            var command = JsonSerializer.Deserialize(req.Body, handlerMap.RequestType, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-           
-            return new OkObjectResult(await _commandDispatcher.Dispatch(command, handlerMap));
+            return await _invoker.DispatchRequest(commandName, req);
         }
     }
 }

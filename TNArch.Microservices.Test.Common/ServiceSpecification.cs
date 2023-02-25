@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using TNArch.Microservices.Test.Common.Testing.Specification;
 using TNArch.Microservices.Test.Common.Abstractions;
-using TNArch.Microservices.Test.Common;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using TNArch.Microservices.Core.Common.Extensions;
 
 namespace TNArch.Microservices.Test.Common
 {

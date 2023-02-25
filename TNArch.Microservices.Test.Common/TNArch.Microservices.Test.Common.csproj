@@ -11,4 +11,8 @@
 		<PackageReference Include="Moq" Version="4.18.4" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\TNArch.Microservices.Core.Common\TNArch.Microservices.Core.Common.csproj" />
+	</ItemGroup>
+
 </Project>

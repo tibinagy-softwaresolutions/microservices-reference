@@ -13,7 +13,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
         public static DependencyDescriptorBuilder UseCommandAsApiEndpoint(this DependencyDescriptorBuilder builder, string serviceName)
         {
             var mapper = new CommandToApiMapper(builder.ServiceCollection);
-            builder.ServiceCollection.AddSingleton<ICommandToApiMapper>(mapper);
+            builder.ServiceCollection.AddSingleton<IOperationToApiMapper>(mapper);
 
             builder.ServiceCollection.AddSwashBuckle(Assembly.GetExecutingAssembly(), opts =>
                 {
@@ -25,7 +25,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
                             Name = $"{serviceName} Open Api document",
                             Title = $"{serviceName} Open Api document",
                             Description = $"Service enpoints of the {serviceName}",
-                            Version = "v2"
+                            Version = "v3"
                         }
                     };
                     opts.ConfigureSwaggerGen = x =>

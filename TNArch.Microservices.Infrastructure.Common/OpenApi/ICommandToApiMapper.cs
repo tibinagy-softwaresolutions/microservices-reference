@@ -1,9 +1,9 @@
 ﻿using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
+using System.Reflection;
 
 namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 {
-    public interface ICommandToApiMapper
+    public interface IOperationToApiMapper
     {
         IEnumerable<IRequestMap> GetRequestMap();
         IHandlerMap GetHandlerMap(string commandName, string httpMethod);
@@ -19,7 +19,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
     public interface IHandlerMap
     {
-        Type HandlerType { get; set; }
         Type RequestType { get; set; }
+        public MethodInfo DispatcherInvoker { get; set; }
     }
 }

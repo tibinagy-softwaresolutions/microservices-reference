@@ -40,15 +40,6 @@ namespace TNArch.Microservices.Test.Common
         }
 
         [DebuggerStepThrough]
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
-        {
-            foreach (T item in source)
-            {
-                action(item);
-            }
-        }
-
-        [DebuggerStepThrough]
         public static IReturnsResult<TMock> ReturnsAsyncQueryable<TMock, TElement>(this IReturns<TMock, IQueryable<TElement>> mock, IEnumerable<TElement> value)
              where TMock : class
              where TElement : class

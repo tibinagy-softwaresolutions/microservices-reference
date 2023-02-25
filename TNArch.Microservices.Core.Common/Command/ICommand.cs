@@ -4,4 +4,8 @@
     {
         string Permission { get; }
     }
+
+    public interface IQuery: ICommand
+    {        
+    }
 }

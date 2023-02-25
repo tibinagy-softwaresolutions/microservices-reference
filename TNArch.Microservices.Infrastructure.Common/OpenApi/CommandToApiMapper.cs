@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Data;
+using System.Reflection;
 using TNArch.Microservices.Core.Common.Command;
+using TNArch.Microservices.Core.Common.Extensions;
 
 namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 {
-    public class CommandToApiMapper : ICommandToApiMapper
+    public class CommandToApiMapper : IOperationToApiMapper
     {
         private readonly Type[] _handlerTypes = new[] { typeof(ICommandHandler<>), typeof(ICommandHandler<,>), typeof(IQueryHandler<,>) };
 
@@ -41,14 +43,17 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             var requestType = genericArguments[0];
 
-            var isCommand = typeof(ICommand).IsAssignableFrom(requestType);
+            var isQuery = typeof(IQuery).IsAssignableFrom(requestType);
             var hasReturnType = genericArguments.Length > 1;
 
             var responseType = typeof(CommandResponse);
+            var dispatcherInvoker = typeof(ICommandDispatcher).GetGenericMethod(nameof(ICommandDispatcher.DispatchCommand), genericArguments);
 
-            if (!isCommand)
-                responseType = typeof(IQueryResult<>).MakeGenericType(genericArguments.Last());
-
+            if (isQuery)
+            {
+                responseType = typeof(QueryResult<>).MakeGenericType(genericArguments.Last());
+                dispatcherInvoker = typeof(ICommandDispatcher).GetGenericMethod(nameof(ICommandDispatcher.DispatchQuery), requestType, responseType);
+            }
             else if (hasReturnType)
                 responseType = typeof(CommandResponse<>).MakeGenericType(genericArguments.Last());
 
@@ -58,7 +63,8 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
                 OperationType = GetOperationType(requestType),
                 HandlerType = serviceType,
                 RequestType = requestType,
-                ResponseType = responseType
+                ResponseType = responseType,
+                DispatcherInvoker = dispatcherInvoker,
             };
         }
 
@@ -77,7 +83,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
         private OperationType GetOperationType(Type requestType)
         {
-            if (requestType.IsAssignableFrom(typeof(IQuery)))
+            if (typeof(IQuery).IsAssignableFrom(requestType))
                 return OperationType.Get;
 
             return _prefixToOperationMap.First(m => requestType.Name.StartsWith(m.Key, StringComparison.OrdinalIgnoreCase)).Value;
@@ -100,6 +106,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
             public Type HandlerType { get; set; }
             public Type RequestType { get; set; }
             public Type ResponseType { get; set; }
+            public MethodInfo DispatcherInvoker { get; set; }
         }
 
     }
