@@ -1,9 +1,10 @@
 ﻿using AzureFunctions.Extensions.Swashbuckle;
 using AzureFunctions.Extensions.Swashbuckle.Settings;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel.Design;
+using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using TNArch.Microservices.Infrastructure.Common.DependencyInjection;
 
 namespace TNArch.Microservices.Infrastructure.Common.OpenApi
@@ -52,6 +53,29 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
                 .Aggregate<string>((previous, current) => previous + current);
 
             return modelType.Name.Split('`').First() + "Of" + prefix;
+        }
+
+        public static JsonObject QueryStringToJson(this IEnumerable<KeyValuePair<string, StringValues>> queryParameters)
+        {
+            var json = new JsonObject();
+
+            var queryParametersByKey = queryParameters.GroupBy(k => k.Key[0..Math.Max(k.Key.IndexOf('.'), 0)]);
+
+            foreach (var parameterGroup in queryParametersByKey)
+            {
+                if (parameterGroup.Key != string.Empty)
+                {
+                    json.Add(parameterGroup.Key, QueryStringToJson(parameterGroup.Select(p => new KeyValuePair<string, StringValues>(p.Key[(parameterGroup.Key.Length + 1)..], p.Value))));
+                    continue;
+                }
+
+                parameterGroup.Where(p => p.Value.Count == 1).ForEach(p => json.Add(p.Key, JsonValue.Create(p.Value[0])));
+
+                parameterGroup.Where(p => p.Value.Count > 1).ForEach(p => json.Add(p.Key, new JsonArray(p.Value.Select(v => JsonValue.Create(v)).ToArray())));
+            }
+
+            return json;
+
         }
 
         public static HttpResponseMessage CreateSwaggerResponse(this ISwashBuckleClient swasBuckleClient, HttpRequestMessage req, string extension, string serviceName)

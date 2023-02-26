@@ -51,8 +51,8 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             if (isQuery)
             {
+                dispatcherInvoker = typeof(ICommandDispatcher).GetGenericMethod(nameof(ICommandDispatcher.DispatchQuery), genericArguments);
                 responseType = typeof(QueryResult<>).MakeGenericType(genericArguments.Last());
-                dispatcherInvoker = typeof(ICommandDispatcher).GetGenericMethod(nameof(ICommandDispatcher.DispatchQuery), requestType, responseType);
             }
             else if (hasReturnType)
                 responseType = typeof(CommandResponse<>).MakeGenericType(genericArguments.Last());

@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using TNArch.Microservices.Core.Common.Command;
 using TNArch.Microservices.Core.Common.DependencyInjection;
 using TNArch.Microservices.Core.Common.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 {
@@ -19,29 +19,33 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IOperationToApiMapper _operationToApiMapper;
+        private readonly JsonSerializerOptions _options;
 
-        public CommandDispatcherInvoker(IServiceProvider serviceProvider, IOperationToApiMapper operationToApiMapper)
+        public CommandDispatcherInvoker(IServiceProvider serviceProvider, IOperationToApiMapper operationToApiMapper, IOptions<JsonSerializerOptions> options)
         {
             _serviceProvider = serviceProvider;
             _operationToApiMapper = operationToApiMapper;
+            _options = options.Value;
         }
 
         public async Task<IActionResult> DispatchRequest(string commandName, HttpRequest req)
         {
-            //https://stackoverflow.com/questions/9817591/convert-querystring-from-to-object
-            var handlerMap =_operationToApiMapper.GetHandlerMap(commandName, req.Method);            
-            
-            var request = await JsonSerializer.DeserializeAsync(req.Body, handlerMap.RequestType);
+            var handlerMap = _operationToApiMapper.GetHandlerMap(commandName, req.Method);
+
+            object requestObject;
+
+            if (req.QueryString.HasValue)
+                requestObject = JsonSerializer.Deserialize(req.Query.QueryStringToJson(), handlerMap.RequestType, _options);
+            else
+                requestObject = await JsonSerializer.DeserializeAsync(req.Body, handlerMap.RequestType, _options);
 
             using var scope = _serviceProvider.CreateScope();
 
             var commandDispatcher = _serviceProvider.GetRequiredService<ICommandDispatcher>();
 
-            var invocationResult = await handlerMap.DispatcherInvoker.InvokeAsync(commandDispatcher,  request);
-            
-            return new OkObjectResult(invocationResult);
-        }
+            var invocationResult = await handlerMap.DispatcherInvoker.InvokeAsync(commandDispatcher, requestObject);
 
-        
+            return new OkObjectResult(invocationResult);
+        }        
     }
 }

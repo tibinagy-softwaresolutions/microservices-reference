@@ -2,6 +2,7 @@
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TNArch.Microservices.Core.Common.Command;
 using TNArch.Microservices.Core.Common.DependencyInjection;
 using TNArch.Microservices.Infrastructure.Common.DependencyInjection;
@@ -19,6 +20,7 @@ namespace TNArch.Microservices.Inventory
             {
                 options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.PropertyNameCaseInsensitive = true;
+                options.Converters.Add(new JsonStringEnumConverter());
             });
 
             builder.Services.AddConventionalDependencies("TNArch.Microservices",

@@ -54,7 +54,7 @@ namespace TNArch.Microservices.Core.Common.Command
             if (!await _permissionService.HasPermission(query.Permission))
                 return new QueryResult<TResponse> { IsAuthorized = false };
             
-            var queryHandler = _serviceProvider.GetRequiredService<ICommandHandler<TQuery, TResponse>>();
+            var queryHandler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery, TResponse>>();
 
             return new QueryResult<TResponse> { Response = await queryHandler.Handle(query) };
         }
