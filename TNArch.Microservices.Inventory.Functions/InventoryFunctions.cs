@@ -10,7 +10,7 @@ using AzureFunctions.Extensions.Swashbuckle;
 using System.Net.Http;
 using TNArch.Microservices.Infrastructure.Common.OpenApi;
 
-namespace TNArch.Microservices.Inventory
+namespace TNArch.Microservices.Inventory.Functions
 {
     public class InventoryFunctions
     {

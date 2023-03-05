@@ -1,7 +1,7 @@
-﻿using AzureFunctions.Extensions.Swashbuckle;
-using AzureFunctions.Extensions.Swashbuckle.Settings;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Net;
 using System.Reflection;
 using System.Text.Json.Nodes;
@@ -16,32 +16,25 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
             var mapper = new CommandToApiMapper(builder.ServiceCollection);
             builder.ServiceCollection.AddSingleton<IOperationToApiMapper>(mapper);
 
-            builder.ServiceCollection.AddSwashBuckle(Assembly.GetExecutingAssembly(), opts =>
+            builder.ServiceCollection.AddSwaggerGen(opts =>
                 {
-                    opts.AddCodeParameter = true;
-                    opts.Documents = new[]
+                    opts.SwaggerDoc("v1", new OpenApiInfo
                     {
-                        new SwaggerDocument
-                        {
-                            Name = $"{serviceName} Open Api document",
-                            Title = $"{serviceName} Open Api document",
-                            Description = $"Service enpoints of the {serviceName}",
-                            Version = "v3"
-                        }
-                    };
-                    opts.ConfigureSwaggerGen = x =>
-                    {
-                        x.CustomSchemaIds(SchemaIdSelector);
-                        x.DocumentFilter<CommandToApiEndpointFilter>(mapper);
-                        x.SchemaFilter<CommandSchemaFilter>();
-                        x.SchemaFilter<EnumSchemaFilter>();
-                    };
+                        Title = $"{serviceName} Open Api document",
+                        Description = $"Service enpoints of the {serviceName}",
+                        Version = "v1"
+                    });
+
+                    opts.CustomSchemaIds(SchemaIdSelector);
+                    opts.DocumentFilter<CommandToApiEndpointFilter>(mapper);
+                    opts.SchemaFilter<CommandSchemaFilter>();
+                    opts.SchemaFilter<EnumSchemaFilter>();
                 });
 
             return builder;
         }
 
-        private static string SchemaIdSelector(Type modelType)
+        public static string SchemaIdSelector(Type modelType)
         {
             if (!modelType.IsConstructedGenericType)
             {
@@ -76,20 +69,6 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             return json;
 
-        }
-
-        public static HttpResponseMessage CreateSwaggerResponse(this ISwashBuckleClient swasBuckleClient, HttpRequestMessage req, string extension, string serviceName)
-        {
-            if (extension == "json")
-                return swasBuckleClient.CreateSwaggerJsonDocumentResponse(req, $"{serviceName} Open Api document");
-
-            if (extension == "yaml")
-                return swasBuckleClient.CreateSwaggerYamlDocumentResponse(req, $"{serviceName} Open Api document");
-
-            if (extension == "html")
-                return swasBuckleClient.CreateSwaggerUIResponse(req, "swagger.json");
-
-            return new HttpResponseMessage(HttpStatusCode.BadRequest);
-        }
+        }       
     }
 }

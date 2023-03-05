@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TNArch.Microservices.Core.Common\TNArch.Microservices.Core.Common.csproj" />
+		<ProjectReference Include="..\TNArch.Microservices.Infrastructure.Common\TNArch.Microservices.Infrastructure.Common.csproj" />
+		<ProjectReference Include="..\TNArch.Microservices.Inventory.Core\TNArch.Microservices.Inventory.Core.csproj" />
+	</ItemGroup>
+</Project>

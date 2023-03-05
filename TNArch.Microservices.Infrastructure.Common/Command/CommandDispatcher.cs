@@ -9,19 +9,14 @@ namespace TNArch.Microservices.Core.Common.Command
     public class CommandDispatcher : ICommandDispatcher
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IPermissionService _permissionService;
 
-        public CommandDispatcher(IServiceProvider serviceProvider, IPermissionService permissionService)
+        public CommandDispatcher(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _permissionService = permissionService;
         }
 
         public async Task<CommandResponse> DispatchCommand<TCommand>(TCommand command) where TCommand : ICommand
-        {
-            if (!await _permissionService.HasPermission(command.Permission))
-                return new CommandResponse { IsAuthorized = false };
-
+        {           
             var validationErrors = await ValidateCommand(command);
 
             if (validationErrors.Any())
@@ -36,9 +31,6 @@ namespace TNArch.Microservices.Core.Common.Command
 
         public async Task<CommandResponse> DispatchCommand<TCommand, TResponse>(TCommand command) where TCommand : ICommand
         {
-            if (!await _permissionService.HasPermission(command.Permission))
-                return new CommandResponse { IsAuthorized = false };
-
             var validationErrors = await ValidateCommand(command);
 
             if (validationErrors.Any())
@@ -51,9 +43,6 @@ namespace TNArch.Microservices.Core.Common.Command
 
         public async Task<QueryResult<TResponse>> DispatchQuery<TQuery, TResponse>(TQuery query) where TQuery : IQuery
         {
-            if (!await _permissionService.HasPermission(query.Permission))
-                return new QueryResult<TResponse> { IsAuthorized = false };
-            
             var queryHandler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery, TResponse>>();
 
             return new QueryResult<TResponse> { Response = await queryHandler.Handle(query) };

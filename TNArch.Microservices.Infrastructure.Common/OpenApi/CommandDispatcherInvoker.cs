@@ -11,7 +11,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 {
     public interface ICommandDispatcherInvoker
     {
-        Task<IActionResult> DispatchRequest(string commandName, HttpRequest req);
+        Task<object> DispatchRequest(string commandName, HttpRequest req);
     }
 
     [Dependency(typeof(ICommandDispatcherInvoker))]
@@ -28,7 +28,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
             _options = options.Value;
         }
 
-        public async Task<IActionResult> DispatchRequest(string commandName, HttpRequest req)
+        public async Task<object> DispatchRequest(string commandName, HttpRequest req)
         {
             var handlerMap = _operationToApiMapper.GetHandlerMap(commandName, req.Method);
 
@@ -43,9 +43,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             var commandDispatcher = _serviceProvider.GetRequiredService<ICommandDispatcher>();
 
-            var invocationResult = await handlerMap.DispatcherInvoker.InvokeAsync(commandDispatcher, requestObject);
-
-            return new OkObjectResult(invocationResult);
+            return await handlerMap.DispatcherInvoker.InvokeAsync(commandDispatcher, requestObject);
         }        
     }
 }

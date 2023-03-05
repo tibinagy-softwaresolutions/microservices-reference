@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 using TNArch.Microservices.Core.Common.Command;
 using TNArch.Microservices.Core.Common.DependencyInjection;
 using TNArch.Microservices.Infrastructure.Common.DependencyInjection;
-using TNArch.Microservices.Inventory;
+using TNArch.Microservices.Inventory.Functions;
 
 [assembly: WebJobsStartup(typeof(Startup))]
-namespace TNArch.Microservices.Inventory
+namespace TNArch.Microservices.Inventory.Functions
 {
     public class Startup : FunctionsStartup
     {
