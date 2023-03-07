@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Net;
-using System.Reflection;
 using System.Text.Json.Nodes;
 using TNArch.Microservices.Infrastructure.Common.DependencyInjection;
 

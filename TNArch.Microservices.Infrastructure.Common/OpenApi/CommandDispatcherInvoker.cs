@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using TNArch.Microservices.Core.Common.Command;
 using TNArch.Microservices.Core.Common.DependencyInjection;
 using TNArch.Microservices.Core.Common.Extensions;
 using Microsoft.Extensions.Options;
+using TNArch.Microservices.Infrastructure.Common.Identity;
 
 namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 {
@@ -41,7 +41,9 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             using var scope = _serviceProvider.CreateScope();
 
-            var commandDispatcher = _serviceProvider.GetRequiredService<ICommandDispatcher>();
+            scope.ServiceProvider.GetRequiredService<IIdentityService>().SetHttpContext(req);
+
+            var commandDispatcher = scope.ServiceProvider.GetRequiredService<ICommandDispatcher>();
 
             return await handlerMap.DispatcherInvoker.InvokeAsync(commandDispatcher, requestObject);
         }        

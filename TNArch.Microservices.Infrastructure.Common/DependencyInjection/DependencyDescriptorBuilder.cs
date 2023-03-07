@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TNArch.Microservices.Core.Common.DependencyInjection;
-using TNArch.Microservices.Infrastructure.Common.DependencyInjection;
 
 namespace TNArch.Microservices.Infrastructure.Common.DependencyInjection
 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TNArch.Microservices.Core.Common.DependencyInjection;
+using TNArch.Microservices.Infrastructure.Common.Identity;
 
 namespace TNArch.Microservices.Core.Common.Command
 {
