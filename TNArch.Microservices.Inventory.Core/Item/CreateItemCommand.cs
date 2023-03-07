@@ -2,17 +2,17 @@
 
 namespace TNArch.Microservices.Inventory.Core.Item
 {
-    public class CreateItemCommand : ICommand
-    {
-        public string Permission => "Demo.Items.Create";
-        public Item Item { get; set; }
-    }
+public class CreateItemCommand : ICommand
+{
+    public string Permission => "Demo.Items.Create";
+    public Item Item { get; set; }
+}
 
-    public class GetItemsByNameQuery : IQuery
-    {
-        public string Permission => "Demo.Items.Read";
-        public string Name { get; set; }
-    }
+public class GetItemsByNameQuery : IQuery
+{
+    public string Permission => "Demo.Items.Read";
+    public string Name { get; set; }
+}
 
     public enum ItemType
     {

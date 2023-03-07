@@ -20,6 +20,7 @@ builder.Services.AddConventionalDependencies("TNArch.Microservices",
                                           .ImplementsOpenGenericInterface(typeof(ICommandHandler<>))
                                           .ImplementsOpenGenericInterface(typeof(ICommandHandler<,>))
                                           .ImplementsOpenGenericInterface(typeof(IQueryHandler<,>))
+                                          .ImplementsOpenGenericInterface(typeof(ICommandValidator<>))
                                           .DecoratedWith<DependencyAttribute>()
                                           .DecoratedWith<DecorateDependencyAttribute>()
                                           .DecoratedWith<ReplaceDependencyAttribute>()
