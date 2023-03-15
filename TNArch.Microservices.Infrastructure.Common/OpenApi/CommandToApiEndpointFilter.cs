@@ -32,7 +32,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
                     var requestSchema = context.SchemaGenerator.GenerateSchema(commandToApiMap.RequestType, schemaRepository);
 
-                    var parameters = GetParameters(requestSchema, schemaRepository);
+                    var parameters = GetQueryParameters(requestSchema, schemaRepository);
 
                     apiPath.Operations[commandToApiMap.OperationType].Parameters = parameters;
                 }
@@ -46,7 +46,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
             }
         }
 
-        private static List<OpenApiParameter> GetParameters(OpenApiSchema requestSchema, SchemaRepository schemaRepository, string prefix = null)
+        private static List<OpenApiParameter> GetQueryParameters(OpenApiSchema requestSchema, SchemaRepository schemaRepository, string prefix = null)
         {
             var schema = schemaRepository.Schemas[requestSchema.Reference.Id];
 
@@ -60,7 +60,7 @@ namespace TNArch.Microservices.Infrastructure.Common.OpenApi
 
             var nestedTypes = schema.Properties
                 .Except(primitiveTypes)
-                .SelectMany(p => GetParameters(p.Value, schemaRepository, $"{prefix}{p.Key}"));
+                .SelectMany(p => GetQueryParameters(p.Value, schemaRepository, $"{prefix}{p.Key}"));
 
             return primitiveTypes
                 .Select(p => new OpenApiParameter { In = ParameterLocation.Query, Name = $"{prefix}{p.Key}", Schema = p.Value })
